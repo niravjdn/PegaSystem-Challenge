@@ -16,6 +16,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<spring.fox.version>3.0.0</spring.fox.version>
 	</properties>
 
 	<dependencies>
@@ -64,7 +65,18 @@
 			<version>2.7</version>
 		</dependency>
 
+		<!-- Spring OpenAPI 3 Documentation-->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>1.2.32</version>
+		</dependency>
 
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>1.2.32</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
