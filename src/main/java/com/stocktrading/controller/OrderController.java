@@ -16,7 +16,7 @@ import java.util.Optional;
 
 
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/order")
 public class OrderController {
 
     private static Logger logger = LoggerFactory.getLogger(OrderController.class);
@@ -24,7 +24,7 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @PostMapping("/place")
+    @RequestMapping(method = RequestMethod.POST, value = "/place", produces = "application/json")
     public ResponseEntity<Order> placeOrder(@RequestBody Order order) {
         try {
             System.out.println(order.toString());
@@ -35,7 +35,7 @@ public class OrderController {
         }
     }
 
-    @PutMapping("/place/{id}")
+    @RequestMapping(method = RequestMethod.PUT, value = "/place/{id}", produces = "application/json")
     public ResponseEntity<Order> updateOrder(@PathVariable("id") String id, @RequestBody Order order) {
         Optional<Order> tutorialData = orderService.findById(id);
 
@@ -52,13 +52,13 @@ public class OrderController {
 
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteOrder(@PathVariable("id") String id) {
+    public ResponseEntity<HttpStatus> deleteOrder(@PathVariable("id") String id) {
         try {
             orderService.deleteById(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         } catch (Exception e) {
-            return new ResponseEntity<>("There is an issue with deleting an order", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
 
