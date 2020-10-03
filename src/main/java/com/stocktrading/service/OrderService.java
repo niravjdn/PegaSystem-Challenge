@@ -29,7 +29,7 @@ public class OrderService {
     @Value("${isExecuteOnCreate}")
     private boolean isExecuteOnCreate;
 
-    @Transactional (readOnly =  true)
+    @Transactional
     public Order save(Order order) {
         Order placedOrder = orderRepository.save(order);
         OrderBook orderBook = orderBooks.get(order.getStock_symbol());
