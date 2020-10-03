@@ -1,18 +1,16 @@
 package com.stocktrading.service;
 
-import com.stocktrading.controller.OrderController;
 import com.stocktrading.model.Order;
 import com.stocktrading.model.Transaction;
 import com.stocktrading.repository.OrderRepository;
-import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import workers.OrderBook;
 
-import javax.transaction.Transactional;
 import java.util.*;
 
 @Service
@@ -31,7 +29,7 @@ public class OrderService {
     @Value("${isExecuteOnCreate}")
     private boolean isExecuteOnCreate;
 
-    @Transactional
+    @Transactional (readOnly =  true)
     public Order save(Order order) {
         Order placedOrder = orderRepository.save(order);
         OrderBook orderBook = orderBooks.get(order.getStock_symbol());
@@ -58,7 +56,7 @@ public class OrderService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Order> findById(String id) {
         return orderRepository.findById(id);
     }

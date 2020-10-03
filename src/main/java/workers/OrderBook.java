@@ -7,7 +7,6 @@ import com.stocktrading.model.Transaction;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -16,11 +15,11 @@ import java.util.TreeMap;
 
 public class OrderBook {
 
-    //Sorted maps to keep bid and ask orders by map
+    //Sorted maps to keep bid and offer orders by map
     //bids are kept in descending order of price
-    //asks are kept in acending order of price
+    //asks are kept in ascending order of price
     Map<Double, List<Order>> bidOrderMap;
-    Map<Double, List<Order>> askOrderMap;
+    Map<Double, List<Order>> offerOrderMap;
 
     public Map<Double, List<Order>> getBidOrderMap() {
         return bidOrderMap;
@@ -29,41 +28,34 @@ public class OrderBook {
     //make the TreeMaps thread safe for concurrency
     public OrderBook() {
         bidOrderMap = Collections.synchronizedSortedMap(new TreeMap(Collections.reverseOrder()));
-        askOrderMap = Collections.synchronizedSortedMap(new TreeMap());
-
+        offerOrderMap = Collections.synchronizedSortedMap(new TreeMap());
     }
 
-    //add order to the book
     public void addOrder(Order order) {
         if (order.getOrder_type() == OrderType.BUY) {
             addOrder(bidOrderMap, order);
-
         } else {
-            addOrder(askOrderMap, order);
+            addOrder(offerOrderMap, order);
         }
-
     }
 
-    //cancel order request, remove the order from orderbook
     public void deleteOrder(Order order) {
         if (order.getOrder_type() == OrderType.BUY) {
             removeOrder(bidOrderMap, order);
         } else {
-            removeOrder(askOrderMap, order);
+            removeOrder(offerOrderMap, order);
         }
     }
 
-    //execute the order in the order book
     public List<Transaction> executeOrder(Order order) {
         if (order.getOrder_type() == OrderType.SELL) {
             return matchOrders(bidOrderMap, order);
         } else {
-            return matchOrders(askOrderMap, order);
+            return matchOrders(offerOrderMap, order);
 
         }
     }
 
-    //method for matching bids and asks
     private List<Transaction> matchOrders(Map<Double, List<Order>> m, Order order) {
         int quantity = order.getUnits();
         boolean foundMatch = false;
@@ -77,7 +69,7 @@ public class OrderBook {
                     quantity = quantity - (bid.getUnits() - bid.getExecuted_quantity());
                     foundMatch = true;
                     if (quantity == 0) { // perfect match
-                        Transaction executionRecord = createExecutionRecord(order, bid, order.getPrice());
+                        Transaction executionRecord = createTransactionRecord(order, bid, order.getPrice());
                         bid.setExecuted_quantity(bid.getUnits());
                         bid.setOrderStatus(OrderStateEnum.EXECUTED);
                         order.setExecuted_quantity(order.getUnits());
@@ -86,25 +78,25 @@ public class OrderBook {
                         removelist.add(bid);
                         break;
                     } else if (quantity < 0) {
-                        Transaction executionRecord = createExecutionRecord(order, bid, order.getPrice());
+                        Transaction executionRecord = createTransactionRecord(order, bid, order.getPrice());
                         bid.setExecuted_quantity(bid.getUnits() + quantity);
                         bid.setOrderStatus(OrderStateEnum.PARTIAL_MATCH);
                         order.setExecuted_quantity(order.getUnits());
                         order.setOrderStatus(OrderStateEnum.EXECUTED);
-                        matchedOrders.add(executionRecord);						removedMatched(order);
+                        matchedOrders.add(executionRecord);
+                        removedMatched(order);
                         break; // order full filled no need to search more
                     } else { // more quantities left
-                        Transaction executionRecord = createExecutionRecord(order, bid, order.getPrice());
+                        Transaction executionRecord = createTransactionRecord(order, bid, order.getPrice());
                         bid.setExecuted_quantity(bid.getUnits());
                         order.setExecuted_quantity(order.getUnits() - quantity);
                         bid.setOrderStatus(OrderStateEnum.EXECUTED);
-                        matchedOrders.add(executionRecord);						removelist.add(bid);
+                        matchedOrders.add(executionRecord);
+                        removelist.add(bid);
                     }
 
                 }
-                // remove matched orders from the order book
                 orderList.removeAll(removelist);
-
             } else {
                 return matchedOrders;
             }
@@ -117,8 +109,7 @@ public class OrderBook {
 
     }
 
-    //keep record of bid, ask match pair, create entry in Order_Execution_Record
-    private Transaction createExecutionRecord(Order order1, Order order2, Double price){
+    private Transaction createTransactionRecord(Order order1, Order order2, Double price){
         Transaction executionRecord = new Transaction();
         if (order1.getOrder_type() == OrderType.BUY) {
             executionRecord.setBuyOrder(order1);
@@ -136,13 +127,12 @@ public class OrderBook {
         return executionRecord;
     }
 
-    //remote the matched order from the order book
     private void removedMatched(Order order) {
         Map<Double, List<Order>> orderMap;
         if (order.getOrder_type() == OrderType.BUY) {
             orderMap = bidOrderMap;
         } else {
-            orderMap = askOrderMap;
+            orderMap = offerOrderMap;
         }
 
         List<Order> orderList = orderMap.get(order.getPrice());
@@ -152,7 +142,6 @@ public class OrderBook {
 
     }
 
-    //check if the price matches for the order
     private boolean matchPrice(Double price, Order o2) {
         if (o2.getOrder_type() == OrderType.BUY) {
             if (price <= o2.getPrice())
@@ -165,7 +154,6 @@ public class OrderBook {
         }
     }
 
-    //add order in the order book
     private void addOrder(Map<Double, List<Order>> m, Order order) {
         List<Order> orderList = m.get(order.getPrice());
         if (orderList == null) {
@@ -175,7 +163,6 @@ public class OrderBook {
         orderList.add(order);
     }
 
-    //remove order for the order book
     private void removeOrder(Map<Double, List<Order>> m, Order order) {
         List<Order> orderList = m.get(order.getPrice());
         if (orderList != null) {
