@@ -6,10 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Date;
 
 @Data
 @Builder
@@ -24,13 +22,20 @@ public class Transaction {
     @GenericGenerator(name = "uuid", strategy = "uuid")
     private String id;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bid_id", nullable = false)
+    Order buyOrder;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "offer_id", nullable = false)
+    Order sellOrder;
+
     private String stock_symbol;
-
-    private String buy_order_id;
-
-    private String sell_order_id;
 
     private int units;
 
     private double price;
+
+    @Builder.Default
+    private Date order_time = new Date();
 }

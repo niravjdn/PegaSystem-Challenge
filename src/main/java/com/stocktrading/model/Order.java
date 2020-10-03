@@ -1,15 +1,14 @@
 package com.stocktrading.model;
 
+import com.stocktrading.enums.OrderStateEnum;
+import com.stocktrading.enums.OrderType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Data
@@ -29,11 +28,17 @@ public class Order {
 
     private String stock_symbol;
 
-    private String order_type;
+    @Enumerated(EnumType.STRING)
+    private OrderType order_type;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStateEnum orderStatus = OrderStateEnum.NEW;
 
     private int units;
 
     private double price;
+
+    private int executed_quantity;
 
     @Builder.Default
     private Date order_time = new Date();
