@@ -36,26 +36,42 @@ public class OrderController {
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/place/{id}", produces = "application/json")
-    public ResponseEntity<Order> updateOrder(@PathVariable("id") String id, @RequestBody Order order) {
-        Optional<Order> tutorialData = orderService.findById(id);
+    public ResponseEntity<HttpStatus> updateOrder(@PathVariable("id") String id, @RequestBody Order order) {
+        Optional<Order> o = orderService.findById(id);
 
-        if (tutorialData.isPresent()) {
-            Order _order = tutorialData.get();
+        if (o.isPresent()) {
+            Order _order = o.get();
             _order.setOrder_time(new Date());
             _order.setPrice(order.getPrice());
             _order.setUnits(order.getUnits());
-            return new ResponseEntity<>(orderService.save(_order), HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteOrder(@PathVariable("id") String id) {
         try {
             orderService.deleteById(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Order> findByID(@PathVariable("id") String id) {
+        try {
+           Optional<Order> o = orderService.findById(id);
+           if(o.isPresent()){
+               return new ResponseEntity<>(o.get(),HttpStatus.OK);
+           }
+           return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
