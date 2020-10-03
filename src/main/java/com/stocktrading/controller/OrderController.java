@@ -27,7 +27,7 @@ public class OrderController {
     @RequestMapping(method = RequestMethod.POST, value = "/place", produces = "application/json")
     public ResponseEntity<Order> placeOrder(@RequestBody Order order) {
         try {
-            System.out.println(order.toString());
+            logger.info(order.toString());
             Order placedOrder = orderService.save(order);
             return new ResponseEntity<Order>(placedOrder, HttpStatus.OK);
         } catch (Exception e) {
