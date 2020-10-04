@@ -16,7 +16,7 @@ import java.util.Optional;
 
 
 @RestController
-@RequestMapping("/order")
+@RequestMapping("/orders")
 public class OrderController {
 
     private static Logger logger = LoggerFactory.getLogger(OrderController.class);
@@ -24,18 +24,18 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @RequestMapping(method = RequestMethod.POST, value = "/place", produces = "application/json")
+    @RequestMapping(method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<Order> placeOrder(@RequestBody Order order) {
         try {
             logger.info(order.toString());
             Order placedOrder = orderService.save(order);
-            return new ResponseEntity<Order>(placedOrder, HttpStatus.OK);
+            return new ResponseEntity<Order>(placedOrder, HttpStatus.CREATED);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "There is an issue with placing an order.");
         }
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/place/{id}", produces = "application/json")
+    @PutMapping("/{id}")
     public ResponseEntity<HttpStatus> updateOrder(@PathVariable("id") String id, @RequestBody Order order) {
         Optional<Order> o = orderService.findById(id);
 
@@ -44,6 +44,7 @@ public class OrderController {
             _order.setOrder_time(new Date());
             _order.setPrice(order.getPrice());
             _order.setUnits(order.getUnits());
+            orderService.save(_order);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -59,9 +60,7 @@ public class OrderController {
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-
         }
-
     }
 
     @GetMapping("/{id}")
