@@ -13,10 +13,8 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)

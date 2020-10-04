@@ -11,12 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import static org.junit.Assert.*;
+
+import java.util.List;
 
 
 @RunWith(SpringRunner.class)
@@ -29,13 +31,16 @@ public class OrderMatching {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    private String baseUrl;
+    private String baseUrlForOrders;
+
+    private String baseUrlForTransactions;
 
 
     @Before
     public void setUp() {
         RestAssured.port = port;
-        baseUrl = "http://localhost:" + port + "/orders";
+        baseUrlForOrders = "http://localhost:" + port + "/orders";
+        baseUrlForTransactions = "http://localhost:" + port + "/transactions";
     }
 
 
@@ -43,104 +48,106 @@ public class OrderMatching {
     public void matchOrders() {
 
         // order 1
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-        map.add("orderCategory", "LIMIT");
-        map.add("orderType", "BID");
-        map.add("quantity", "10");
-        map.add("price", "200");
-        map.add("symbol", "AAPL");
-        Order result = restTemplate.postForObject(baseUrl, map, Order.class);
+        Order order = new Order();
+        order.setUser_id("niravjdn");
+        order.setUnits(10);
+        order.setStock_symbol("AAPL");
+        order.setPrice(200);
+        order.setOrder_type(OrderType.BUY);
+        Order result = restTemplate.postForObject(baseUrlForOrders, order, Order.class);
 
         // order 2
-        map = new LinkedMultiValueMap<String, String>();
-        map.add("orderCategory", "LIMIT");
-        map.add("orderType", "BID");
-        map.add("quantity", "20");
-        map.add("price", "150");
-        map.add("symbol", "AAPL");
-        result = restTemplate.postForObject(baseUrl, map, Order.class);
+        order = new Order();
+        order.setUser_id("niravjdn");
+        order.setUnits(20);
+        order.setStock_symbol("AAPL");
+        order.setPrice(150);
+        order.setOrder_type(OrderType.BUY);
+        result = restTemplate.postForObject(baseUrlForOrders, order, Order.class);
 
         // order 3
-        map = new LinkedMultiValueMap<String, String>();
-        map.add("orderCategory", "LIMIT");
-        map.add("orderType", "BID");
-        map.add("quantity", "60");
-        map.add("price", "145");
-        map.add("symbol", "AAPL");
-        result = restTemplate.postForObject(baseUrl, map, Order.class);
+        order = new Order();
+        order.setUser_id("niravjdn");
+        order.setUnits(60);
+        order.setStock_symbol("AAPL");
+        order.setPrice(145);
+        order.setOrder_type(OrderType.BUY);
+        result = restTemplate.postForObject(baseUrlForOrders, order, Order.class);
 
         // order 4
-        map = new LinkedMultiValueMap<String, String>();
-        map.add("orderCategory", "LIMIT");
-        map.add("orderType", "BID");
-        map.add("quantity", "50");
-        map.add("price", "130");
-        map.add("symbol", "AAPL");
-        result = restTemplate.postForObject(baseUrl, map, Order.class);
+        order = new Order();
+        order.setUser_id("niravjdn");
+        order.setUnits(50);
+        order.setStock_symbol("AAPL");
+        order.setPrice(130);
+        order.setOrder_type(OrderType.BUY);
+        result = restTemplate.postForObject(baseUrlForOrders, order, Order.class);
 
         // order 5
-        map = new LinkedMultiValueMap<String, String>();
-        map.add("orderCategory", "LIMIT");
-        map.add("orderType", "BID");
-        map.add("quantity", "50");
-        map.add("price", "130");
-        map.add("symbol", "MSFT");
-        result = restTemplate.postForObject(baseUrl, map, Order.class);
+        order = new Order();
+        order.setUser_id("niravjdn");
+        order.setUnits(50);
+        order.setStock_symbol("MSFT");
+        order.setPrice(130);
+        order.setOrder_type(OrderType.BUY);
+        result = restTemplate.postForObject(baseUrlForOrders, order, Order.class);
 
         // -----------------------------------------------------------------
         // order 1
-        map = new LinkedMultiValueMap<String, String>();
-        map.add("orderCategory", "LIMIT");
-        map.add("orderType", "ASK");
-        map.add("quantity", "20");
-        map.add("price", "90");
-        map.add("symbol", "AAPL");
-        result = restTemplate.postForObject(baseUrl, map, Order.class);
+        order = new Order();
+        order.setUser_id("niravjdn");
+        order.setUnits(20);
+        order.setStock_symbol("AAPL");
+        order.setPrice(90);
+        order.setOrder_type(OrderType.SELL);
+        result = restTemplate.postForObject(baseUrlForOrders, order, Order.class);
 
         // order 2
-        map = new LinkedMultiValueMap<String, String>();
-        map.add("orderCategory", "LIMIT");
-        map.add("orderType", "ASK");
-        map.add("quantity", "20");
-        map.add("price", "95");
-        map.add("symbol", "AAPL");
-        result = restTemplate.postForObject(baseUrl, map, Order.class);
+        order = new Order();
+        order.setUser_id("niravjdn");
+        order.setUnits(20);
+        order.setStock_symbol("AAPL");
+        order.setPrice(95);
+        order.setOrder_type(OrderType.SELL);
+        result = restTemplate.postForObject(baseUrlForOrders, order, Order.class);
 
         // order 3
-        map = new LinkedMultiValueMap<String, String>();
-        map.add("orderCategory", "LIMIT");
-        map.add("orderType", "ASK");
-        map.add("quantity", "45");
-        map.add("price", "100");
-        map.add("symbol", "AAPL");
-        result = restTemplate.postForObject(baseUrl, map, Order.class);
+        order = new Order();
+        order.setUser_id("niravjdn");
+        order.setUnits(45);
+        order.setStock_symbol("AAPL");
+        order.setPrice(100);
+        order.setOrder_type(OrderType.SELL);
+        result = restTemplate.postForObject(baseUrlForOrders, order, Order.class);
 
         // order 4
-        map = new LinkedMultiValueMap<String, String>();
-        map.add("orderCategory", "LIMIT");
-        map.add("orderType", "ASK");
-        map.add("quantity", "50");
-        map.add("price", "120");
-        map.add("symbol", "AAPL");
-        result = restTemplate.postForObject(baseUrl, map, Order.class);
+        order = new Order();
+        order.setUser_id("niravjdn");
+        order.setUnits(50);
+        order.setStock_symbol("AAPL");
+        order.setPrice(120);
+        order.setOrder_type(OrderType.SELL);
+        result = restTemplate.postForObject(baseUrlForOrders, order, Order.class);
 
         // order 4
-        map = new LinkedMultiValueMap<String, String>();
-        map.add("orderCategory", "LIMIT");
-        map.add("orderType", "ASK");
-        map.add("quantity", "50");
-        map.add("price", "130");
-        map.add("symbol", "MSFT");
-        result = restTemplate.postForObject(baseUrl, map, Order.class);
+        order = new Order();
+        order.setUser_id("niravjdn");
+        order.setUnits(50);
+        order.setStock_symbol("MSFT");
+        order.setPrice(130);
+        order.setOrder_type(OrderType.SELL);
+        result = restTemplate.postForObject(baseUrlForOrders, order, Order.class);
 
-        Transaction aaplResult = restTemplate.postForObject(baseUrl + "/execute/AAPL", map,
-                Transaction.class);
 
-        Transaction msftResult = restTemplate.postForObject(baseUrl + "/execute/MSFT", map,
-                Transaction.class);
+//        assertEquals(aaplResult.getUnits().intValue(), 7); //there should be 7 trades for AAPL
+//        assertEquals(msftResult.getUnits().intValue(), 1); //there should be 1 trade for MSFT
 
-//        assertEquals(aaplResult.getTotalTrades().intValue(), 7); //there should be 7 trades for AAPL
-//        assertEquals(msftResult.getTotalTrades().intValue(), 1); //there should be 1 trade for MSFT
+        ResponseEntity<List<Transaction>> rateResponse =
+                restTemplate.exchange("https://bitpay.com/api/rates",
+                        HttpMethod.GET, null, new ParameterizedTypeReference<List<Transaction>>() {
+                        });
+
+
 
     }
 
