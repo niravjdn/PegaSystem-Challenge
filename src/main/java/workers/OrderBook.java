@@ -33,8 +33,10 @@ public class OrderBook {
 
     public void addOrder(Order order) {
         if (order.getOrder_type() == OrderType.BUY) {
+            deleteOrder(order);
             addOrder(bidOrderMap, order);
         } else {
+            deleteOrder(order);
             addOrder(offerOrderMap, order);
         }
     }
