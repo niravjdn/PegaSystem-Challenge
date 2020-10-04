@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,6 +23,11 @@ public class TransactionService {
     @Transactional (readOnly = true)
     public List<Transaction> findAll() {
         return transactionRepository.findAll();
+    }
+
+    @Transactional (readOnly = true)
+    public List<Transaction> findBySymbol(String symbol) {
+        return new ArrayList<Transaction>(transactionRepository.findByStockSymbol(symbol)) ;
     }
 
 }

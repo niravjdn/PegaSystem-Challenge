@@ -3,6 +3,7 @@ package com.stocktrading.stocktradingdemo;
 import com.stocktrading.enums.OrderType;
 import com.stocktrading.model.Order;
 import com.stocktrading.model.Transaction;
+import com.stocktrading.model.TransactionsResponse;
 import io.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,15 +16,15 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class OrderMatching {
+public class OrderMatchingTest {
 
     @LocalServerPort
     private int port;
@@ -142,13 +143,10 @@ public class OrderMatching {
 //        assertEquals(aaplResult.getUnits().intValue(), 7); //there should be 7 trades for AAPL
 //        assertEquals(msftResult.getUnits().intValue(), 1); //there should be 1 trade for MSFT
 
-        ResponseEntity<List<Transaction>> rateResponse =
-                restTemplate.exchange("https://bitpay.com/api/rates",
-                        HttpMethod.GET, null, new ParameterizedTypeReference<List<Transaction>>() {
-                        });
-
-
-
+        TransactionsResponse AAPLTransactions = restTemplate.getForObject(baseUrlForTransactions+"/{company}", TransactionsResponse.class, "AAPL");
+        TransactionsResponse MSFTTransactions = restTemplate.getForObject(baseUrlForTransactions+"/{company}", TransactionsResponse.class, "MSFT");
+        assertEquals(AAPLTransactions.getTransactions().size(),7);
+        assertEquals(MSFTTransactions.getTransactions().size(),1);
     }
 
 

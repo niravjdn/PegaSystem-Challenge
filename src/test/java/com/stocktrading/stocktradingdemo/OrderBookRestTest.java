@@ -44,7 +44,7 @@ public class OrderBookRestTest {
         Order o = createOrderObject();
         Order result = restTemplate.postForObject(baseUrl, o, Order.class);
         assertEquals(result.getUnits(), 10);
-        assertEquals(result.getStock_symbol(), "AAPL");
+        assertEquals(result.getStock_symbol(), "GOOGL");
         orderID = result.getId();
     }
 
@@ -72,7 +72,7 @@ public class OrderBookRestTest {
         Order order = new Order();
         order.setUser_id("niravjdn");
         order.setUnits(10);
-        order.setStock_symbol("AAPL");
+        order.setStock_symbol("GOOGL");
         order.setPrice(100);
         order.setOrder_type(OrderType.BUY);
         return order;
